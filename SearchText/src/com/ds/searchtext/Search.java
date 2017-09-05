@@ -39,25 +39,47 @@ public class Search
 		s1.listFiles(f1);
 		
 		Iterator<String> itr = fileList.iterator();
+		boolean flag = true;
 		while(itr.hasNext())
 		{
 			String fileName = itr.next();
 			File file = new File(fileName);
+		
 			try {
+				
 				BufferedReader br = new BufferedReader(new FileReader(file));
 				String data;
-				System.out.println("--------------------"+fileName+"---------------------------");
+				String value = "Durgesh";
+				int count = 0;
+				flag = true;
+			//	System.out.println("--------------------"+fileName+"---------------------------");
 				while((data= br.readLine())!=null)
 				{
-					System.out.println(data);
+					count++;
+					if(data.contains(value))
+					{
+						flag = true;
+						System.out.println("Data found in file "+fileName+ " Line Number "+count);
+					}
+					else
+					{
+						flag = false;
+					}
+				
 				}
+				
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+		
 		}
+		if(flag == false)
+		{
+		System.out.println("Data not found in any file");
+		}
+		
 	}
 	
 }
