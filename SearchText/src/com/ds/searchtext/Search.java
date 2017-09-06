@@ -34,6 +34,9 @@ public class Search
 	
 	public static void main(String args[])
 	{
+		UI ui = new UI();
+		ui.create_UI();
+		ui.view_UI();
 		File f1 = new File("D:\\DS");
 		Search s1 = new Search();
 		s1.listFiles(f1);
