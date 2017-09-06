@@ -70,32 +70,17 @@ public class UI
     ImageIcon imageIcon = new ImageIcon(imagelogo);
     */
  //   this.header_logo = new JLabel(imageIcon);
-    this.tabName = new JLabel("      STR       ");
-    this.tabName.setFont(font);
-    this.tabName.setOpaque(true);
-    this.tabName.setBackground(Color.WHITE);
-    this.tabName.setBorder(this.border);
     
     this.logFile_lable = new JLabel("Log File Path :");
     this.logFile_textfield = new JTextField(4);
     
     
-    this.percentile_lable = new JLabel("Percentile:");
+    this.percentile_lable = new JLabel("Text to Find:");
     this.percentile_textfield = new JTextField();
-    
-    this.sla_lable = new JLabel("SLA(in secs):");
-    this.sla_textfield = new JTextField();
-    
-    new JLabel("Output:");
-    new JRadioButton("CSV");
-    new JRadioButton("HTML");
-    
     this.browse_button = new JButton("Browse");
-    this.generate_button = new JButton("Generate");
-    this.export_button = new JButton("Export");
-    
-    this.copyright = new JLabel("� 2017 Developed by Mastek Ltd.");
-    this.copyright.setFont(new Font("Arial", 0, 10));
+    this.generate_button = new JButton("Find");
+
+ 
     setLayout(null);
   
     
@@ -104,23 +89,33 @@ public class UI
     add(this.browse_button).setBounds(670, 70, 105, 30);
     
     add(this.percentile_lable).setBounds(10, 120, 120, 30);
-    add(this.percentile_textfield).setBounds(120, 120, 130, 30);
+    add(this.percentile_textfield).setBounds(120, 120, 400, 30);
     
-    add(this.sla_lable).setBounds(255, 120, 100, 30);
-    add(this.sla_textfield).setBounds(330, 120, 130, 30);
-    
-    add(this.generate_button).setBounds(460, 120, 155, 30);
-    add(this.export_button).setBounds(620, 120, 155, 30);
+    add(this.generate_button).setBounds(600, 120, 155, 30);
     
     this.browse_button.addActionListener(new ActionListener()
     {
       public void actionPerformed(ActionEvent e)
       {
-        UI.this.fileChooser = new JFileChooser();
+    	  JFileChooser chooser = new JFileChooser();
+    	    chooser.setCurrentDirectory(new java.io.File("."));
+    	    chooser.setDialogTitle("choosertitle");
+    	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    	    chooser.setAcceptAllFileFilterUsed(false);
+
+    	    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+    	      System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
+    	      UI.this.logFile_textfield.setText(chooser.getCurrentDirectory().getAbsolutePath());
+    	      System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
+    	    } else {
+    	      System.out.println("No Selection ");
+    	    }
+       /* UI.this.fileChooser = new JFileChooser();
         int r = UI.this.fileChooser.showOpenDialog(UI.this.frame);
+        UI.this.fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         if (r == 0) {
           UI.this.logFile_textfield.setText(UI.this.fileChooser.getSelectedFile().getPath());
-        }
+        }*/
       }
     });
 
@@ -182,7 +177,6 @@ public class UI
     top.setBackground(Color.decode("#F0F8FF"));
     
     middle.setLayout(new BorderLayout());
-    middle.add(this.tabName, "West");
     middle.setBackground(Color.decode("#F0F8FF"));
     middle.setOpaque(false);
     
@@ -193,7 +187,6 @@ public class UI
     container.add(top).setBounds(5, 0, 785, 70);
     container.add(middle).setBounds(5, 70, 785, 20);
     container.add(this).setBounds(5, 89, 785, 170);
-    container.add(this.copyright).setBounds(598, 256, 200, 20);
     
     container.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
     container.setBackground(Color.decode("#B8F6FD"));
