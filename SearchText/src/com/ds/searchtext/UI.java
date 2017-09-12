@@ -8,6 +8,12 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -30,24 +36,22 @@ public class UI
   public static Image icon = null;
   private JLabel header_lable;
   private JLabel logFile_lable;
-  private JLabel tabName;
-  private JLabel copyright;
   private JTextField logFile_textfield;
   private JLabel percentile_lable;
   private JTextField percentile_textfield;
-  private JLabel sla_lable;
-  private JTextField sla_textfield;
   private JButton browse_button;
   private JButton generate_button;
-  private JButton export_button;
   Border border;
   JFrame frame;
-  private JFileChooser fileChooser;
+   String filePath;
+   String data;
+  JFileChooser chooser = new JFileChooser();
+  
+ 
+Search sc = new Search();
   
   public void create_UI()
   {
-    Font font = new Font("Georgia", 0, 14);
-    
     this.border = BorderFactory.createLineBorder(Color.BLACK, 1);
     try
     {
@@ -56,22 +60,8 @@ public class UI
     }
     catch (Exception localException) {}
     this.header_lable = new JLabel("Search Text");
- //   this.header_lable.setForeground(Color.decode("#6495ed"));
-/*    InputStream imageInputStream = getClass().getClassLoader().getResourceAsStream("img/Mastek.png");
-    Image imagelogo = null;
-    try
-    {
-      imagelogo = ImageIO.read(imageInputStream);
-    }
-    catch (IOException e2)
-    {
-      e2.printStackTrace();
-    }
-    ImageIcon imageIcon = new ImageIcon(imagelogo);
-    */
- //   this.header_logo = new JLabel(imageIcon);
     
-    this.logFile_lable = new JLabel("Log File Path :");
+    this.logFile_lable = new JLabel("File Path :");
     this.logFile_textfield = new JTextField(4);
     
     
@@ -97,7 +87,7 @@ public class UI
     {
       public void actionPerformed(ActionEvent e)
       {
-    	  JFileChooser chooser = new JFileChooser();
+    
     	    chooser.setCurrentDirectory(new java.io.File("."));
     	    chooser.setDialogTitle("choosertitle");
     	    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -105,62 +95,38 @@ public class UI
 
     	    if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
     	      System.out.println("getCurrentDirectory(): " + chooser.getCurrentDirectory());
-    	      UI.this.logFile_textfield.setText(chooser.getCurrentDirectory().getAbsolutePath());
+    	      UI.this.logFile_textfield.setText(chooser.getSelectedFile().getAbsolutePath());
     	      System.out.println("getSelectedFile() : " + chooser.getSelectedFile());
     	    } else {
     	      System.out.println("No Selection ");
     	    }
-       /* UI.this.fileChooser = new JFileChooser();
-        int r = UI.this.fileChooser.showOpenDialog(UI.this.frame);
-        UI.this.fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (r == 0) {
-          UI.this.logFile_textfield.setText(UI.this.fileChooser.getSelectedFile().getPath());
-        }*/
+   
       }
     });
 
+    this.generate_button.addActionListener(new ActionListener()
+    {
+
+		@Override
+		public void actionPerformed(ActionEvent e) 
+		{
+			Search s1 = new Search();
+			filePath = (chooser.getSelectedFile().getAbsolutePath());
+			System.out.println(filePath);
+			data = percentile_textfield.getText();
+			System.out.println(data);
+
+			getData();
+		}
+    	
+    });
+    }
    
-  }
+
   
-  /*public boolean validation()
-  {
-    if (StartExecution.inputFile.equals(""))
-    {
-      selectValidFile();
-      return false;
-    }
-    if ((StartExecution.percentile <= 0) || (StartExecution.percentile > 100))
-    {
-      JOptionPane.showMessageDialog(this.frame, 
-        "Please Enter Percentile Between 1-100.", 
-        "Warning!", 
-        2);
-      return false;
-    }
-    if ((Report.isSLA) && 
-      (StartExecution.sla <= 0.0D))
-    {
-      JOptionPane.showMessageDialog(this.frame, 
-        "Please Enter SLA Greater than 0.", 
-        "Warning!", 
-        2);
-      return false;
-    }
-    return true;
-  }*/
- /* 
-  public void selectValidFile()
-  {
-    JOptionPane.showMessageDialog(this.frame, 
-      "Please Select Valid Log File.", 
-      "Warning!", 
-      2);
-    StartExecution.generated = false;
-  }
-  */
   public void view_UI()
   {
-    this.frame = new JFrame("Single User Transaction Report");
+    this.frame = new JFrame("Search Text");
     this.frame.setDefaultCloseOperation(3);
     JPanel container = new JPanel();
     container.setLayout(new BorderLayout(5, 5));
@@ -173,15 +139,12 @@ public class UI
     
     top.setLayout(new BorderLayout());
     top.add(this.header_lable, "West");
-  //  top.add(this.header_logo, "East");
-    top.setBackground(Color.decode("#F0F8FF"));
-    
+
     middle.setLayout(new BorderLayout());
-    middle.setBackground(Color.decode("#F0F8FF"));
+
     middle.setOpaque(false);
     
     setBorder(this.border);
-    setBackground(Color.decode("#191970"));
     
     top.setOpaque(false);
     container.add(top).setBounds(5, 0, 785, 70);
@@ -189,7 +152,7 @@ public class UI
     container.add(this).setBounds(5, 89, 785, 170);
     
     container.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
-    container.setBackground(Color.decode("#B8F6FD"));
+ 
     this.frame.add(container);
     
     this.frame.getContentPane().setBackground(Color.BLACK);
@@ -201,19 +164,77 @@ public class UI
     int x = (screen.width - width) / 2;
     int y = (screen.height - height) / 2;
     this.frame.setLocation(x, y);
-  /*  try
-    {
-      InputStream iconInputStream = getClass().getClassLoader().getResourceAsStream("img/icon.png");
-      icon = ImageIO.read(iconInputStream);
-    }
-    catch (IOException e)
-    {
-      e.printStackTrace();
-    }*/
+
     this.frame.setIconImage(icon);
     this.frame.setVisible(true);
     this.frame.setResizable(false);
   }
+  
+  
+  static ArrayList<String> fileList = new ArrayList<String>();
+	public void listFiles(File directory)
+	{
+		for(final File fileEntry : directory.listFiles())
+		{
+			if(fileEntry.isDirectory())
+			{
+				listFiles(fileEntry);
+			}
+			else
+			{		
+					if(fileEntry.getName().contains(".txt"))
+					{
+						fileList.add(fileEntry.getAbsolutePath());
+					//	System.out.println(fileEntry.getAbsolutePath());
+					}
+				
+			}
+		}
+	}
+	
+	public void getData()
+	{
+		Search s1 = new Search();
+		File f1 = new File(filePath);
+		listFiles(f1);
+		System.out.println(fileList);
+		Iterator<String> itr = fileList.iterator();
+		int flag = 0;
+		while(itr.hasNext())
+		{
+			String fileName = itr.next();
+			File file = new File(fileName);
+			try {
+				
+				BufferedReader br = new BufferedReader(new FileReader(file));
+				String readInfo;
+				String value = data;
+				int count = 0;
+			//	System.out.println("--------------------"+fileName+"---------------------------");
+				while((readInfo= br.readLine())!=null)
+				{
+					count++;
+					if(readInfo.contains(value))
+					{
+						flag++;
+						System.out.println("Data found in file "+fileName+ " Line Number "+count);
+					}
+				}
+				
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+		}
+		System.out.println(flag);
+		if(flag ==0 )
+		{
+		System.out.println("Data not found in any file");
+		}
+		
+	}
   
   public void actionPerformed(ActionEvent arg0) {}
 }
