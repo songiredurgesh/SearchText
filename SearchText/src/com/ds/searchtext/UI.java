@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.TextArea;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -47,6 +49,10 @@ public class UI
    String data;
   JFileChooser chooser = new JFileChooser();
   
+  
+  /* Text Area to display data */
+  JFrame outputFrame = new JFrame("Text Search Result");
+  JPanel opPanel = new JPanel();
  
 Search sc = new Search();
   
@@ -200,9 +206,12 @@ Search sc = new Search();
 		System.out.println(fileList);
 		Iterator<String> itr = fileList.iterator();
 		int flag = 0;
+		String content= null;
+		TextArea ta = new TextArea();
 		while(itr.hasNext())
 		{
 			String fileName = itr.next();
+		
 			File file = new File(fileName);
 			try {
 				
@@ -210,6 +219,7 @@ Search sc = new Search();
 				String readInfo;
 				String value = data;
 				int count = 0;
+				
 			//	System.out.println("--------------------"+fileName+"---------------------------");
 				while((readInfo= br.readLine())!=null)
 				{
@@ -217,7 +227,15 @@ Search sc = new Search();
 					if(readInfo.contains(value))
 					{
 						flag++;
-						System.out.println("Data found in file "+fileName+ " Line Number "+count);
+						content ="Data found in file "+fileName+ " Line Number "+count + "\n";
+						ta.append(content);
+						ta.setSize(750,250);
+						opPanel.add(new JScrollPane(ta));
+						System.out.println(content);
+						
+					
+						
+						
 					}
 				}
 				
@@ -231,8 +249,18 @@ Search sc = new Search();
 		System.out.println(flag);
 		if(flag ==0 )
 		{
-		System.out.println("Data not found in any file");
+		System.out.println();
+		ta.append("Data not found in any file");
 		}
+				
+		
+		
+		outputFrame.getContentPane().add(opPanel,"North");
+
+		outputFrame.setVisible(true);
+		outputFrame.pack();
+		outputFrame.setSize(800, 300);
+		outputFrame.setResizable(false);
 		
 	}
   
